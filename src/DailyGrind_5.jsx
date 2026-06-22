@@ -36,6 +36,11 @@ const BADGES = [
   { id: "streak3",    icon: "🔥", label: "Hat Trick",         desc: "3-day streak",                            check: s => s.streak >= 3 },
   { id: "streak7",    icon: "🗡️", label: "Week Warrior",      desc: "7-day streak",                            check: s => s.streak >= 7 },
   { id: "streak14",   icon: "🌕", label: "Two Week Beast",    desc: "14-day streak",                           check: s => s.streak >= 14 },
+  { id: "streak21",   icon: "🧱", label: "Habit Former",      desc: "21-day streak",                           check: s => s.streak >= 21 },
+  { id: "streak30",   icon: "🏅", label: "Monthly Grinder",   desc: "30-day streak",                           check: s => s.streak >= 30 },
+  { id: "streak50",   icon: "⚡", label: "Fifty Days",        desc: "50-day streak",                           check: s => s.streak >= 50 },
+  { id: "streak100",  icon: "💎", label: "Century",           desc: "100-day streak",                          check: s => s.streak >= 100 },
+  { id: "streak365",  icon: "🌟", label: "Legendary",         desc: "365-day streak",                          check: s => s.streak >= 365 },
   { id: "traits5",    icon: "🌈", label: "Trait Collector",   desc: "Earned 5 different traits",               check: s => Object.keys(s.traitXP).length >= 5 },
   { id: "traits10",   icon: "🧬", label: "Renaissance",       desc: "Earned 10 different traits",              check: s => Object.keys(s.traitXP).length >= 10 },
   { id: "xp100",      icon: "👑", label: "Self Made",         desc: "Earned 100 total XP",                     check: s => s.totalXP >= 100 },
@@ -114,6 +119,74 @@ const TAB_AWAY_ROASTS = [
   "Session paused while you did literally anything else.",
 ];
 
+// Savage roasts shown while tasks are pending
+const SAVAGE_ROASTS = [
+  "Still here. Still undone. Still you.",
+  "You made a list. Congrats on the easy part.",
+  "Your tasks are aging like milk.",
+  "That task has been staring at you longer than your unread messages.",
+  "Procrastination level: advanced.",
+  "Every hour you wait, your future self gets angrier.",
+  "You didn't fail today. You just haven't started yet. That's almost worse.",
+  "Clock's ticking. You're not.",
+  "Three words: you. did. nothing.",
+  "The audacity to still not do this.",
+  "Your to-do list called. It's filing for abandonment.",
+  "Even the task is embarrassed for you.",
+  "You're really letting this one age like fine procrastination.",
+  "Somewhere a productivity guru is weeping. That's on you.",
+  "Not urgent? Not important? Just uncomfortable? Thought so.",
+  "You opened the app. Great. Now do the actual thing.",
+  "Your future self already wrote the apology note.",
+  "Another day. Same undone tasks. Bold strategy.",
+];
+
+// Positive only when ALL tasks done
+const ALL_DONE_LINES = [
+  "Everything done. That's genuinely rare. Be proud.",
+  "Full clear. You showed up and handled business today.",
+  "Zero remaining. This is what discipline looks like.",
+  "All tasks done. Your future self owes you one.",
+  "Complete. You actually did it. Every single thing.",
+];
+
+// Streak milestone messages
+const STREAK_MILESTONES = {
+  3:   "3 days straight. You're building something real.",
+  7:   "One week. Most people quit before this. You didn't.",
+  14:  "Two weeks. This isn't luck anymore. This is a habit.",
+  21:  "21 days. Scientists say that's when habits form. Congrats.",
+  30:  "30 days. One month of showing up. Respect.",
+  50:  "50 days. You're in rare territory now.",
+  75:  "75 days. Three quarters to 100. You're not stopping.",
+  100: "100 days. You are built different. No debate.",
+  365: "365 days. A full year. Legendary. Actual legend.",
+};
+
+// Task keyword → trait mapping
+const KEYWORD_TRAITS = [
+  { keywords: ["lunch","eat","food","dinner","breakfast","meal","cook","restaurant"], trait: "wellness",     bonus: "Energy +10" },
+  { keywords: ["read","study","learn","research","book","course","class","notes"],   trait: "wisdom",       bonus: "Wisdom +10" },
+  { keywords: ["run","gym","workout","exercise","jog","walk","swim","yoga","lift"],  trait: "grit",         bonus: "Grit +10" },
+  { keywords: ["meet","call","talk","present","pitch","interview","network"],        trait: "charisma",     bonus: "Charisma +10" },
+  { keywords: ["code","build","design","write","create","draw","plan","make"],       trait: "creativity",   bonus: "Creativity +10" },
+  { keywords: ["meditate","rest","sleep","breathe","relax","recover"],              trait: "patience",     bonus: "Patience +10" },
+  { keywords: ["lead","manage","organize","review","decide","hire","fire"],         trait: "leadership",   bonus: "Leadership +10" },
+  { keywords: ["ship","launch","submit","publish","send","deploy","finish"],        trait: "hustle",       bonus: "Hustle +10" },
+  { keywords: ["practice","rehearse","perform","play","music","instrument"],       trait: "music",        bonus: "Music +10" },
+];
+
+function getTaskTrait(text) {
+  if (!text) return null;
+  const lower = text.toLowerCase();
+  for (const { keywords, trait, bonus } of KEYWORD_TRAITS) {
+    if (keywords.some(k => lower.includes(k))) {
+      return { traitId: trait, bonus };
+    }
+  }
+  return null;
+}
+
 function todayStr() { const d = new Date(); return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
 function fmtDuration(secs) {
   const h = Math.floor(secs / 3600), m = Math.floor((secs % 3600) / 60), s = secs % 60;
@@ -143,7 +216,18 @@ function sinceAdded(ts) {
 }
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-const DEFAULT_STATS = { totalXP: 0, totalDone: 0, streak: 0, traitXP: {}, earnedBadges: [], reschedules: 0, carryOvers: 0, notToday: 0, comebacks: 0, totalFocusSecs: 0, lastActiveDate: null };
+const DEFAULT_STATS = { totalXP: 0, totalDone: 0, streak: 0, traitXP: {}, earnedBadges: [], reschedules: 0, carryOvers: 0, notToday: 0, comebacks: 0, totalFocusSecs: 0, bestFocusSecs: 0, lastActiveDate: null };
+
+// History helpers — stored separately in localStorage
+function loadHistory() { try { return JSON.parse(localStorage.getItem("dg_history") || "[]"); } catch { return []; } }
+function saveHistory(h) { try { localStorage.setItem("dg_history", JSON.stringify(h)); } catch {} }
+function addHistoryDay(date, doneTasks, totalTasks, focusSecs, streak) {
+  const history = loadHistory();
+  const existing = history.findIndex(d => d.date === date);
+  const entry = { date, done: doneTasks, total: totalTasks, focusSecs, streak };
+  if (existing >= 0) history[existing] = entry; else history.unshift(entry);
+  saveHistory(history.slice(0, 365)); // keep max 1 year
+}
 
 // ── MAIN ──────────────────────────────────────────────────────────────────────
 
@@ -160,15 +244,18 @@ export default function App() {
   const [reward, setReward] = useState(null);
   const [badge, setBadge] = useState(null);
   const [toast, setToast] = useState(null);
-  const [newDayScreen, setNewDayScreen] = useState(null); // { yesterday summary }
+  const [newDayScreen, setNewDayScreen] = useState(null);
   const [focusActive, setFocusActive] = useState(false);
   const [focusSecs, setFocusSecs] = useState(0);
   const [tabAwayRoast, setTabAwayRoast] = useState(null);
-  // Pomodoro
-  const [pomodoroMode, setPomodoroMode] = useState(null); // null=freeform, "25/5", "50/10"
-  const [pomodoroPhase, setPomodoroPhase] = useState("work"); // "work"|"break"
+  const [pomodoroMode, setPomodoroMode] = useState(null);
+  const [pomodoroPhase, setPomodoroPhase] = useState("work");
   const [pomodoroSecs, setPomodoroSecs] = useState(0);
   const [pomodoroRounds, setPomodoroRounds] = useState(0);
+  // AI Planner
+  const [plannerEnergy, setPlannerEnergy] = useState(null); // "morning"|"afternoon"|"evening"
+  const [plannerResult, setPlannerResult] = useState(null);
+  const [plannerLoading, setPlannerLoading] = useState(false);
   const toastTimer = useRef(null);
   const focusInterval = useRef(null);
 
@@ -295,11 +382,12 @@ export default function App() {
   function handleNewDay(action) {
     const today = todayStr();
     const yesterdayDone = (newDayScreen?.doneTasks || []).length;
-    // Calculate how many days were missed
     const lastDate = newDayScreen?.date;
     const daysMissed = lastDate
       ? Math.round((new Date(today) - new Date(lastDate)) / 86400000) - 1
       : 0;
+    const totalYesterday = (newDayScreen?.doneTasks?.length || 0) + (newDayScreen?.pendingTasks?.length || 0);
+    addHistoryDay(lastDate, yesterdayDone, totalYesterday, newDayScreen?.focusSecs || 0, stats.streak);
     setTasks(prev => {
       const pending = prev.filter(t => !t.done);
       if (action === "carry") {
@@ -308,16 +396,12 @@ export default function App() {
         return [];
       }
     });
-    setStats(s => ({
-      ...s,
-      lastActiveDate: today,
-      lastDayFocusSecs: 0,
-      streak: yesterdayDone > 0
-        ? s.streak + 1          // finished tasks → +1
-        : daysMissed >= 2
-        ? 0                     // missed 2+ days → reset
-        : s.streak,             // missed 1 day → freeze
-    }));
+    setStats(s => {
+      const newStreak = yesterdayDone > 0 ? s.streak + 1 : daysMissed >= 2 ? 0 : s.streak;
+      const milestoneMsg = STREAK_MILESTONES[newStreak];
+      if (milestoneMsg) setTimeout(() => showToast("🔥 " + milestoneMsg, "success"), 1200);
+      return { ...s, lastActiveDate: today, lastDayFocusSecs: 0, streak: newStreak };
+    });
     setNewDayScreen(null);
   }
 
@@ -325,6 +409,7 @@ export default function App() {
   useEffect(() => {
     try { localStorage.setItem("dg_stats", JSON.stringify({ ...stats, lastActiveDate: todayStr() })); } catch {}
   }, [stats]);
+
 
 
   function showToast(msg, type = "info") {
@@ -343,34 +428,38 @@ export default function App() {
     return { finalStats: newStats, newBadge: null };
   }
 
-  function giveReward(baseStats) {
-    const trait = pick(TRAITS);
+  function giveReward(baseStats, taskText, allDone) {
+    const matched = getTaskTrait(taskText);
+    const trait = matched
+      ? TRAITS.find(t => t.id === matched.traitId) || pick(TRAITS)
+      : pick(TRAITS);
     const xp = pick([5, 10, 15, 20, 25]);
     const newTraitXP = { ...baseStats.traitXP, [trait.id]: (baseStats.traitXP[trait.id] || 0) + xp };
     const updated = { ...baseStats, totalXP: baseStats.totalXP + xp, traitXP: newTraitXP };
     const { finalStats, newBadge } = checkBadges(updated);
     setStats(finalStats);
-    setReward({ trait, xp, msg: pick(WIN_LINES) });
+    const msg = allDone ? pick(ALL_DONE_LINES) : matched ? matched.bonus : pick(SAVAGE_ROASTS);
+    setReward({ trait, xp, msg, allDone });
     if (newBadge) setTimeout(() => setBadge(newBadge), 2400);
   }
 
   function toggleDone(id) {
-    setTasks(prev => prev.map(t => {
-      if (t.id !== id) return t;
-      const nowDone = !t.done;
-      if (nowDone) {
-        const wasCarried = t.carriedOver;
-        const updated = {
-          ...stats,
-          totalDone: stats.totalDone + 1,
-          comebacks: stats.comebacks + (wasCarried ? 1 : 0),
-        };
-        setTimeout(() => giveReward(updated), 300);
-      } else {
-        showToast("Un-checking it? All good, pick it back up.", "info");
-      }
-      return { ...t, done: nowDone, skipped: false, carriedOver: false };
-    }));
+    setTasks(prev => {
+      const updated = prev.map(t => {
+        if (t.id !== id) return t;
+        const nowDone = !t.done;
+        if (nowDone) {
+          const wasCarried = t.carriedOver;
+          const newStats = { ...stats, totalDone: stats.totalDone + 1, comebacks: stats.comebacks + (wasCarried ? 1 : 0) };
+          const allDone = prev.filter(x => x.id !== id && !x.done && !x.skipped && !x.carriedOver).length === 0;
+          setTimeout(() => giveReward(newStats, t.text, allDone), 300);
+        } else {
+          showToast("Un-checking it? All good, pick it back up.", "info");
+        }
+        return { ...t, done: nowDone, skipped: false, carriedOver: false };
+      });
+      return updated;
+    });
   }
 
   function markNotToday(id) {
@@ -415,6 +504,50 @@ export default function App() {
   function deleteTask(id) {
     setTasks(prev => prev.filter(t => t.id !== id));
     showToast("Gone. Fresh start.", "info");
+  }
+
+  async function runAIPlanner() {
+    if (!plannerEnergy) { showToast("Pick your peak energy time first.", "info"); return; }
+    const activeTasks = tasks.filter(t => !t.done && !t.skipped);
+    if (activeTasks.length === 0) { showToast("No tasks to plan. Add some first.", "info"); return; }
+    setPlannerLoading(true);
+    setPlannerResult(null);
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 1000,
+          messages: [{
+            role: "user",
+            content: `You are a brutal, no-nonsense 80/20 productivity coach. The user's peak energy is: ${plannerEnergy}.
+Their tasks for today:
+${activeTasks.map((t, i) => `${i + 1}. ${t.text}`).join("\n")}
+
+Apply the 80/20 rule: identify the top 20% of tasks (max 2-3) that will create 80% of the results. 
+Be direct and mean if needed. No fluff.
+
+Respond ONLY as valid JSON, no markdown, no backticks:
+{
+  "top20": [list of task numbers that are the critical 20%],
+  "schedule": [
+    { "taskNum": 1, "timeBlock": "morning/afternoon/evening", "reason": "one brutal sentence why" }
+  ],
+  "coachNote": "one savage but motivating sentence about their task list overall"
+}`
+          }]
+        })
+      });
+      const data = await res.json();
+      const text = data.content?.map(c => c.text || "").join("") || "";
+      const clean = text.replace(/```json|```/g, "").trim();
+      const parsed = JSON.parse(clean);
+      setPlannerResult({ ...parsed, tasks: activeTasks });
+    } catch {
+      showToast("AI planner failed. Try again.", "info");
+    }
+    setPlannerLoading(false);
   }
 
   const done = tasks.filter(t => t.done).length;
@@ -475,10 +608,10 @@ export default function App() {
 
       {/* NAV */}
       <div style={{ display: "flex", margin: "16px 20px 0", background: "#16161f", borderRadius: 10, padding: 3, border: "1px solid #2a2a38" }}>
-        {[["tasks","📋 Tasks"],["rewards","✨ Rewards"]].map(([v, lbl]) => (
+        {[["tasks","📋"],["planner","🧠"],["history","📅"],["rewards","✨"]].map(([v, lbl]) => (
           <button key={v} onClick={() => setView(v)} style={{
             flex: 1, padding: "9px 0", border: "none", borderRadius: 8, cursor: "pointer",
-            fontSize: 12, fontWeight: 700, letterSpacing: 0.5,
+            fontSize: 16, fontWeight: 700,
             background: view === v ? "#6366f1" : "transparent",
             color: view === v ? "#fff" : "#555570",
           }}>{lbl}</button>
@@ -683,6 +816,14 @@ export default function App() {
         </div>
       )}
 
+      {/* PLANNER */}
+      {view === "planner" && (
+        <PlannerView tasks={tasks} energy={plannerEnergy} setEnergy={setPlannerEnergy} result={plannerResult} loading={plannerLoading} onRun={runAIPlanner} />
+      )}
+
+      {/* HISTORY */}
+      {view === "history" && <HistoryView />}
+
       {/* REWARDS */}
       {view === "rewards" && <RewardsView stats={stats} />}
 
@@ -830,6 +971,155 @@ function TabAwayOverlay({ msg, onDismiss }) {
           borderRadius: 10, color: "#86efac", fontSize: 13, fontWeight: 700, cursor: "pointer",
         }}>▶ Resume Focus</button>
       </div>
+    </div>
+  );
+}
+
+// ── AI PLANNER VIEW ───────────────────────────────────────────────────────────
+
+function PlannerView({ tasks, energy, setEnergy, result, loading, onRun }) {
+  const activeTasks = tasks.filter(t => !t.done && !t.skipped);
+  const energyOptions = [
+    { id: "morning",   icon: "🌅", label: "Morning",   sub: "Peak before noon" },
+    { id: "afternoon", icon: "☀️",  label: "Afternoon", sub: "Peak 12–5pm" },
+    { id: "evening",   icon: "🌙", label: "Evening",   sub: "Peak after 5pm" },
+  ];
+  return (
+    <div style={{ padding: "14px 20px" }}>
+      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: "#555570", marginBottom: 12 }}>80/20 AI PLANNER</div>
+      <div style={{ background: "#16161f", border: "1px solid #2a2a38", borderRadius: 14, padding: 16, marginBottom: 14, fontSize: 13, color: "#7070a0", lineHeight: 1.6 }}>
+        Tell the AI your peak energy time. It'll identify the <span style={{ color: "#6366f1", fontWeight: 700 }}>top 20% of tasks</span> that will create 80% of your results — and schedule them ruthlessly.
+      </div>
+
+      {/* Energy picker */}
+      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: "#555570", marginBottom: 10 }}>WHEN ARE YOU SHARPEST TODAY?</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 16 }}>
+        {energyOptions.map(({ id, icon, label, sub }) => (
+          <button key={id} onClick={() => setEnergy(id)} style={{
+            padding: "14px 8px", background: energy === id ? "#1e1b4b" : "#16161f",
+            border: "1px solid " + (energy === id ? "#6366f1" : "#2a2a38"),
+            borderRadius: 12, cursor: "pointer", textAlign: "center",
+          }}>
+            <div style={{ fontSize: 22, marginBottom: 4 }}>{icon}</div>
+            <div style={{ fontSize: 12, fontWeight: 800, color: energy === id ? "#a5b4fc" : "#7070a0" }}>{label}</div>
+            <div style={{ fontSize: 9, color: "#3a3a50", marginTop: 2 }}>{sub}</div>
+          </button>
+        ))}
+      </div>
+
+      {/* Task count */}
+      {activeTasks.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "24px 0", color: "#3a3a50", fontSize: 13 }}>No active tasks to plan. Add tasks first.</div>
+      ) : (
+        <>
+          <div style={{ fontSize: 11, color: "#555570", marginBottom: 14 }}>
+            {activeTasks.length} active task{activeTasks.length > 1 ? "s" : ""} ready to be ranked.
+          </div>
+          <button onClick={onRun} disabled={!energy || loading} style={{
+            width: "100%", padding: 16,
+            background: energy ? "linear-gradient(135deg,#1e1b4b,#312e81)" : "#16161f",
+            border: "1px solid " + (energy ? "#6366f1" : "#2a2a38"),
+            borderRadius: 14, color: energy ? "#a5b4fc" : "#3a3a50",
+            fontSize: 14, fontWeight: 800, cursor: energy ? "pointer" : "not-allowed", marginBottom: 16,
+          }}>
+            {loading ? "🧠 Thinking..." : "🧠 Generate 80/20 Plan"}
+          </button>
+        </>
+      )}
+
+      {/* Result */}
+      {result && (
+        <div style={{ animation: "fadeIn .4s" }}>
+          {/* Coach note */}
+          <div style={{ background: "#0d0b24", border: "1px solid #3730a3", borderRadius: 12, padding: "12px 16px", marginBottom: 14, fontSize: 13, color: "#a5b4fc", fontStyle: "italic" }}>
+            💬 "{result.coachNote}"
+          </div>
+
+          {/* Top 20% */}
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: "#ef4444", marginBottom: 10 }}>🎯 CRITICAL 20% — DO THESE FIRST</div>
+          {result.schedule
+            .filter(s => result.top20.includes(s.taskNum))
+            .map((s, i) => {
+              const task = result.tasks[s.taskNum - 1];
+              if (!task) return null;
+              return (
+                <div key={i} style={{ background: "#1a0a0a", border: "1px solid #7f1d1d", borderRadius: 12, padding: "12px 14px", marginBottom: 8 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#f1f1f5", flex: 1 }}>{task.text}</div>
+                    <span style={{ fontSize: 10, background: "#7f1d1d", color: "#fca5a5", borderRadius: 6, padding: "2px 8px", marginLeft: 8, flexShrink: 0 }}>{s.timeBlock}</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#8080a0", fontStyle: "italic" }}>{s.reason}</div>
+                </div>
+              );
+            })}
+
+          {/* Rest */}
+          {result.schedule.filter(s => !result.top20.includes(s.taskNum)).length > 0 && (
+            <>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: "#555570", marginBottom: 10, marginTop: 14 }}>THE OTHER 80% — GET TO THESE AFTER</div>
+              {result.schedule
+                .filter(s => !result.top20.includes(s.taskNum))
+                .map((s, i) => {
+                  const task = result.tasks[s.taskNum - 1];
+                  if (!task) return null;
+                  return (
+                    <div key={i} style={{ background: "#16161f", border: "1px solid #2a2a38", borderRadius: 12, padding: "12px 14px", marginBottom: 8, opacity: 0.7 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
+                        <div style={{ fontSize: 13, color: "#a0a0c0", flex: 1 }}>{task.text}</div>
+                        <span style={{ fontSize: 10, color: "#555570", marginLeft: 8 }}>{s.timeBlock}</span>
+                      </div>
+                      <div style={{ fontSize: 11, color: "#555570", fontStyle: "italic" }}>{s.reason}</div>
+                    </div>
+                  );
+                })}
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── HISTORY VIEW ──────────────────────────────────────────────────────────────
+
+function HistoryView() {
+  const history = loadHistory();
+  if (history.length === 0) {
+    return (
+      <div style={{ padding: "40px 20px", textAlign: "center", color: "#3a3a50" }}>
+        <div style={{ fontSize: 40, marginBottom: 12 }}>📅</div>
+        <div style={{ fontWeight: 700, color: "#555570", marginBottom: 6 }}>No history yet.</div>
+        <div style={{ fontSize: 13 }}>Come back tomorrow. Your record starts then.</div>
+      </div>
+    );
+  }
+  return (
+    <div style={{ padding: "14px 20px" }}>
+      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: "#555570", marginBottom: 12 }}>YOUR RECORD — ALL TIME</div>
+      {history.map((day, i) => {
+        const pct = day.total > 0 ? Math.round((day.done / day.total) * 100) : 0;
+        const pctColor = pct === 100 ? "#22c55e" : pct >= 60 ? "#6366f1" : pct >= 30 ? "#f97316" : "#ef4444";
+        const label = new Date(day.date + "T12:00:00").toLocaleDateString("en", { weekday: "short", month: "short", day: "numeric" });
+        return (
+          <div key={i} style={{ background: "#16161f", border: "1px solid #2a2a38", borderRadius: 12, padding: "12px 16px", marginBottom: 8 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#e2e2e8" }}>{label}</div>
+              <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                {day.streak > 0 && <span style={{ fontSize: 11, color: "#f97316" }}>{day.streak}🔥</span>}
+                <span style={{ fontSize: 12, fontWeight: 800, color: pctColor }}>{pct}%</span>
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 16, marginBottom: 8 }}>
+              <span style={{ fontSize: 11, color: "#22c55e" }}>✓ {day.done} done</span>
+              <span style={{ fontSize: 11, color: "#555570" }}>/ {day.total} total</span>
+              {day.focusSecs > 0 && <span style={{ fontSize: 11, color: "#06b6d4" }}>⏱ {fmtDuration(day.focusSecs)}</span>}
+            </div>
+            <div style={{ height: 4, background: "#0f0f18", borderRadius: 99, overflow: "hidden" }}>
+              <div style={{ height: "100%", width: pct + "%", background: pctColor, borderRadius: 99 }} />
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -1098,12 +1388,12 @@ function RewardPopup({ reward, onClose }) {
     <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.65)", zIndex: 500, display: "flex", alignItems: "center", justifyContent: "center", padding: 24, animation: "fadeIn .2s" }}>
       <div style={{ background: "#13131c", border: "2px solid " + reward.trait.color, borderRadius: 20, padding: "28px 24px", maxWidth: 300, width: "100%", textAlign: "center", animation: "popIn .4s ease", boxShadow: "0 0 60px " + reward.trait.color + "40" }}>
         <div style={{ fontSize: 54, animation: "float 2s ease-in-out infinite", marginBottom: 8 }}>{reward.trait.icon}</div>
-        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: reward.trait.color, marginBottom: 4 }}>TRAIT UNLOCKED</div>
+        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: reward.trait.color, marginBottom: 4 }}>TRAIT BOOST</div>
         <div style={{ fontSize: 22, fontWeight: 900, color: "#f1f1f5", marginBottom: 6 }}>{reward.trait.label}</div>
         <div style={{ display: "inline-block", background: reward.trait.color + "20", border: "1px solid " + reward.trait.color, borderRadius: 99, padding: "4px 14px", fontSize: 13, fontWeight: 700, color: reward.trait.color, marginBottom: 16 }}>
           +{reward.xp} XP
         </div>
-        <div style={{ fontSize: 13, color: "#a0a0c0", fontStyle: "italic", lineHeight: 1.6 }}>"{reward.msg}"</div>
+        <div style={{ fontSize: 13, color: reward.allDone ? "#22c55e" : "#a0a0c0", fontStyle: "italic", lineHeight: 1.6 }}>"{reward.msg}"</div>
         <div style={{ marginTop: 14, fontSize: 11, color: "#3a3a50" }}>tap to dismiss</div>
       </div>
     </div>
