@@ -1,54 +1,55 @@
+// @charset "UTF-8"
 import { useState, useEffect, useRef } from "react";
 
-// ?€?€ DATA ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+// â”€â”€ DATA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const TRAITS = [
-  { id: "discipline",   label: "Discipline",      icon: "?”ï?",  color: "#6366f1" },
-  { id: "creativity",   label: "Creativity",      icon: "?¨",  color: "#f97316" },
-  { id: "music",        label: "Music Talent",    icon: "?µ",  color: "#a855f7" },
-  { id: "focus",        label: "Deep Focus",      icon: "??",  color: "#06b6d4" },
-  { id: "resilience",   label: "Resilience",      icon: "?”¥",  color: "#ef4444" },
-  { id: "confidence",   label: "Confidence",      icon: "??",  color: "#eab308" },
-  { id: "leadership",   label: "Leadership",      icon: "??",  color: "#f59e0b" },
-  { id: "wellness",     label: "Wellness",        icon: "?Œ¿",  color: "#22c55e" },
-  { id: "wisdom",       label: "Wisdom",          icon: "??",  color: "#8b5cf6" },
-  { id: "speed",        label: "Speed",           icon: "??,  color: "#facc15" },
-  { id: "charisma",     label: "Charisma",        icon: "??,  color: "#ec4899" },
-  { id: "streetsmarts", label: "Street Smarts",   icon: "??",  color: "#f59e0b" },
-  { id: "patience",     label: "Patience",        icon: "??",  color: "#14b8a6" },
-  { id: "courage",      label: "Courage",         icon: "??",  color: "#dc2626" },
-  { id: "hustle",       label: "Hustle",          icon: "?’¼",  color: "#7c3aed" },
-  { id: "artistry",     label: "Artistry",        icon: "??ï¸?,  color: "#db2777" },
-  { id: "grit",         label: "Grit",            icon: "?ª¨",  color: "#78716c" },
-  { id: "humor",        label: "Humor",           icon: "??",  color: "#fbbf24" },
-  { id: "empathy",      label: "Empathy",         icon: "??",  color: "#3b82f6" },
-  { id: "ambition",     label: "Ambition",        icon: "??",  color: "#8b5cf6" },
+  { id: "discipline",   label: "Discipline",      icon: "âš”ï¸",  color: "#6366f1" },
+  { id: "creativity",   label: "Creativity",      icon: "ğŸ¨",  color: "#f97316" },
+  { id: "music",        label: "Music Talent",    icon: "ğŸµ",  color: "#a855f7" },
+  { id: "focus",        label: "Deep Focus",      icon: "ğŸ§ ",  color: "#06b6d4" },
+  { id: "resilience",   label: "Resilience",      icon: "ğŸ”¥",  color: "#ef4444" },
+  { id: "confidence",   label: "Confidence",      icon: "ğŸ‘‘",  color: "#eab308" },
+  { id: "leadership",   label: "Leadership",      icon: "ğŸ¦",  color: "#f59e0b" },
+  { id: "wellness",     label: "Wellness",        icon: "ğŸŒ¿",  color: "#22c55e" },
+  { id: "wisdom",       label: "Wisdom",          icon: "ğŸ“š",  color: "#8b5cf6" },
+  { id: "speed",        label: "Speed",           icon: "\u26A1",  color: "#facc15" },
+  { id: "charisma",     label: "Charisma",        icon: "âœ¨",  color: "#ec4899" },
+  { id: "streetsmarts", label: "Street Smarts",   icon: "ğŸ¦Š",  color: "#f59e0b" },
+  { id: "patience",     label: "Patience",        icon: "ğŸ§˜",  color: "#14b8a6" },
+  { id: "courage",      label: "Courage",         icon: "ğŸ¦…",  color: "#dc2626" },
+  { id: "hustle",       label: "Hustle",          icon: "ğŸ’¼",  color: "#7c3aed" },
+  { id: "artistry",     label: "Artistry",        icon: "ğŸ–Œï¸",  color: "#db2777" },
+  { id: "grit",         label: "Grit",            icon: "ğŸª¨",  color: "#78716c" },
+  { id: "humor",        label: "Humor",           icon: "ğŸ˜‚",  color: "#fbbf24" },
+  { id: "empathy",      label: "Empathy",         icon: "ğŸ’™",  color: "#3b82f6" },
+  { id: "ambition",     label: "Ambition",        icon: "ğŸš€",  color: "#8b5cf6" },
 ];
 
 const BADGES = [
-  { id: "first",      icon: "??", label: "First Win",        desc: "Completed your first task",               check: s => s.totalDone >= 1 },
-  { id: "five",       icon: "?³", label: "On a Roll",         desc: "Completed 5 tasks total",                 check: s => s.totalDone >= 5 },
-  { id: "ten",        icon: "?’ª", label: "Double Digits",     desc: "Completed 10 tasks total",                check: s => s.totalDone >= 10 },
-  { id: "twenty",     icon: "?™ï?", label: "The Grinder",       desc: "Completed 20 tasks total",                check: s => s.totalDone >= 20 },
-  { id: "fifty",      icon: "??", label: "Fifty Club",        desc: "Completed 50 tasks total",                check: s => s.totalDone >= 50 },
-  { id: "reschedule", icon: "??", label: "Flexible Mind",     desc: "Rescheduled a task instead of quitting",  check: s => s.reschedules >= 1 },
-  { id: "carry",      icon: "??", label: "Carried Over",      desc: "Moved 3 tasks to tomorrow",               check: s => s.carryOvers >= 3 },
-  { id: "streak3",    icon: "?”¥", label: "Hat Trick",         desc: "3-day streak",                            check: s => s.streak >= 3 },
-  { id: "streak7",    icon: "?—¡ï¸?, label: "Week Warrior",      desc: "7-day streak",                            check: s => s.streak >= 7 },
-  { id: "streak14",   icon: "??", label: "Two Week Beast",    desc: "14-day streak",                           check: s => s.streak >= 14 },
-  { id: "streak21",   icon: "?§±", label: "Habit Former",      desc: "21-day streak",                           check: s => s.streak >= 21 },
-  { id: "streak30",   icon: "??", label: "Monthly Grinder",   desc: "30-day streak",                           check: s => s.streak >= 30 },
-  { id: "streak50",   icon: "??, label: "Fifty Days",        desc: "50-day streak",                           check: s => s.streak >= 50 },
-  { id: "streak100",  icon: "??", label: "Century",           desc: "100-day streak",                          check: s => s.streak >= 100 },
-  { id: "streak365",  icon: "??", label: "Legendary",         desc: "365-day streak",                          check: s => s.streak >= 365 },
-  { id: "traits5",    icon: "??", label: "Trait Collector",   desc: "Earned 5 different traits",               check: s => Object.keys(s.traitXP).length >= 5 },
-  { id: "traits10",   icon: "?§¬", label: "Renaissance",       desc: "Earned 10 different traits",              check: s => Object.keys(s.traitXP).length >= 10 },
-  { id: "xp100",      icon: "??", label: "Self Made",         desc: "Earned 100 total XP",                     check: s => s.totalXP >= 100 },
-  { id: "xp500",      icon: "??", label: "Diamond Mind",      desc: "Earned 500 total XP",                     check: s => s.totalXP >= 500 },
-  { id: "honest",     icon: "??", label: "Self Aware",        desc: "Marked 'Not today' 5 times",              check: s => s.notToday >= 5 },
-  { id: "comeback",   icon: "??", label: "Comeback Kid",      desc: "Completed a task after carrying it over", check: s => s.comebacks >= 1 },
-  { id: "focus30",    icon: "??", label: "In The Zone",        desc: "Focused for 30 minutes in one session",   check: s => (s.bestFocusSecs || 0) >= 1800 },
-  { id: "focus60",    icon: "?”¬", label: "Deep Work",          desc: "Focused for 1 hour in one session",       check: s => (s.bestFocusSecs || 0) >= 3600 },
+  { id: "first",      icon: "ğŸ¥‡", label: "First Win",        desc: "Completed your first task",               check: s => s.totalDone >= 1 },
+  { id: "five",       icon: "ğŸ³", label: "On a Roll",         desc: "Completed 5 tasks total",                 check: s => s.totalDone >= 5 },
+  { id: "ten",        icon: "ğŸ’ª", label: "Double Digits",     desc: "Completed 10 tasks total",                check: s => s.totalDone >= 10 },
+  { id: "twenty",     icon: "âš™ï¸", label: "The Grinder",       desc: "Completed 20 tasks total",                check: s => s.totalDone >= 20 },
+  { id: "fifty",      icon: "ğŸ†", label: "Fifty Club",        desc: "Completed 50 tasks total",                check: s => s.totalDone >= 50 },
+  { id: "reschedule", icon: "ğŸ”„", label: "Flexible Mind",     desc: "Rescheduled a task instead of quitting",  check: s => s.reschedules >= 1 },
+  { id: "carry",      icon: "ğŸ’", label: "Carried Over",      desc: "Moved 3 tasks to tomorrow",               check: s => s.carryOvers >= 3 },
+  { id: "streak3",    icon: "ğŸ”¥", label: "Hat Trick",         desc: "3-day streak",                            check: s => s.streak >= 3 },
+  { id: "streak7",    icon: "ğŸ—¡ï¸", label: "Week Warrior",      desc: "7-day streak",                            check: s => s.streak >= 7 },
+  { id: "streak14",   icon: "ğŸŒ•", label: "Two Week Beast",    desc: "14-day streak",                           check: s => s.streak >= 14 },
+  { id: "streak21",   icon: "ğŸ§±", label: "Habit Former",      desc: "21-day streak",                           check: s => s.streak >= 21 },
+  { id: "streak30",   icon: "ğŸ…", label: "Monthly Grinder",   desc: "30-day streak",                           check: s => s.streak >= 30 },
+  { id: "streak50",   icon: "âš¡", label: "Fifty Days",        desc: "50-day streak",                           check: s => s.streak >= 50 },
+  { id: "streak100",  icon: "ğŸ’", label: "Century",           desc: "100-day streak",                          check: s => s.streak >= 100 },
+  { id: "streak365",  icon: "ğŸŒŸ", label: "Legendary",         desc: "365-day streak",                          check: s => s.streak >= 365 },
+  { id: "traits5",    icon: "ğŸŒˆ", label: "Trait Collector",   desc: "Earned 5 different traits",               check: s => Object.keys(s.traitXP).length >= 5 },
+  { id: "traits10",   icon: "ğŸ§¬", label: "Renaissance",       desc: "Earned 10 different traits",              check: s => Object.keys(s.traitXP).length >= 10 },
+  { id: "xp100",      icon: "ğŸ‘‘", label: "Self Made",         desc: "Earned 100 total XP",                     check: s => s.totalXP >= 100 },
+  { id: "xp500",      icon: "ğŸ’", label: "Diamond Mind",      desc: "Earned 500 total XP",                     check: s => s.totalXP >= 500 },
+  { id: "honest",     icon: "ğŸª", label: "Self Aware",        desc: "Marked 'Not today' 5 times",              check: s => s.notToday >= 5 },
+  { id: "comeback",   icon: "ğŸ¦‹", label: "Comeback Kid",      desc: "Completed a task after carrying it over", check: s => s.comebacks >= 1 },
+  { id: "focus30",    icon: "ğŸ§˜", label: "In The Zone",        desc: "Focused for 30 minutes in one session",   check: s => (s.bestFocusSecs || 0) >= 1800 },
+  { id: "focus60",    icon: "ğŸ”¬", label: "Deep Work",          desc: "Focused for 1 hour in one session",       check: s => (s.bestFocusSecs || 0) >= 3600 },
 ];
 
 // Mean roasts for pending tasks
@@ -73,7 +74,7 @@ const MEAN_LINES = [
   "Not urgent? Not important? Just uncomfortable? Yeah, thought so.",
 ];
 
-// Backhanded compliments after completing ??the good stuff
+// Backhanded compliments after completing â€” the good stuff
 const WIN_LINES = [
   "Damn, you actually did it. I had my doubts.",
   "One step away from being a complete disaster and you pulled through. Nice.",
@@ -101,7 +102,7 @@ const CARRY_LINES = [
   "You tried. That counts more than you think.",
   "Moving it forward, not giving up on it.",
   "Flexibility is a skill too. See you tomorrow.",
-  "Not done, not abandoned ??just rescheduled.",
+  "Not done, not abandoned â€” just rescheduled.",
   "Even unfinished progress is still progress.",
 ];
 
@@ -112,7 +113,7 @@ const TAB_AWAY_ROASTS = [
   "Timer paused. Your focus did not survive the journey.",
   "Caught you. What was so important? Exactly.",
   "You left. The tasks noticed. They're not happy.",
-  "Back already? Your attention span is??something.",
+  "Back already? Your attention span isâ€¦ something.",
   "Focus session interrupted. By you. As always.",
   "The app waited. Like it always does. Unlike you.",
   "You returned. The procrastination demons are retreating. For now.",
@@ -163,7 +164,7 @@ const STREAK_MILESTONES = {
   365: "365 days. A full year. Legendary. Actual legend.",
 };
 
-// Task keyword ??trait mapping
+// Task keyword â†’ trait mapping
 const KEYWORD_TRAITS = [
   { keywords: ["lunch","eat","food","dinner","breakfast","meal","cook","restaurant"], trait: "wellness",     bonus: "Energy +10" },
   { keywords: ["read","study","learn","research","book","course","class","notes"],   trait: "wisdom",       bonus: "Wisdom +10" },
@@ -218,7 +219,7 @@ function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 const DEFAULT_STATS = { totalXP: 0, totalDone: 0, streak: 0, traitXP: {}, earnedBadges: [], reschedules: 0, carryOvers: 0, notToday: 0, comebacks: 0, totalFocusSecs: 0, bestFocusSecs: 0, lastActiveDate: null };
 
-// History helpers ??stored separately in localStorage
+// History helpers â€” stored separately in localStorage
 function loadHistory() { try { return JSON.parse(localStorage.getItem("dg_history") || "[]"); } catch { return []; } }
 function saveHistory(h) { try { localStorage.setItem("dg_history", JSON.stringify(h)); } catch {} }
 function addHistoryDay(date, doneTasks, totalTasks, focusSecs, streak) {
@@ -229,7 +230,7 @@ function addHistoryDay(date, doneTasks, totalTasks, focusSecs, streak) {
   saveHistory(history.slice(0, 365)); // keep max 1 year
 }
 
-// ?€?€ MAIN ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+// â”€â”€ MAIN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function App() {
   const [tasks, setTasks] = useState(() => {
@@ -259,12 +260,12 @@ export default function App() {
   const toastTimer = useRef(null);
   const focusInterval = useRef(null);
 
-  // ?€?€ NEW DAY CHECK ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+  // â”€â”€ NEW DAY CHECK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     const today = todayStr();
     const lastDate = stats.lastActiveDate;
     if (lastDate && lastDate !== today) {
-      // It's a new day ??build yesterday summary
+      // It's a new day â€” build yesterday summary
       const doneTasks = tasks.filter(t => t.done);
       const pendingTasks = tasks.filter(t => !t.done);
       setNewDayScreen({
@@ -274,12 +275,12 @@ export default function App() {
         focusSecs: stats.lastDayFocusSecs || 0,
       });
     } else if (!lastDate) {
-      // First ever open ??just stamp today
+      // First ever open â€” just stamp today
       setStats(s => ({ ...s, lastActiveDate: today }));
     }
   }, []);  // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ?€?€ FOCUS / POMODORO TICK ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+  // â”€â”€ FOCUS / POMODORO TICK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     if (focusActive) {
       focusInterval.current = setInterval(() => {
@@ -287,7 +288,7 @@ export default function App() {
           setPomodoroSecs(s => {
             const next = s - 1;
             if (next <= 0) {
-              // Phase complete ??switch
+              // Phase complete â€” switch
               setPomodoroPhase(ph => {
                 const isWork = ph === "work";
                 if (!isWork) setPomodoroRounds(r => r + 1);
@@ -315,14 +316,14 @@ export default function App() {
     const duration = pomodoroPhase === "work" ? workMins * 60 : breakMins * 60;
     setPomodoroSecs(duration);
     if (pomodoroPhase === "break") {
-      showToast("?? Work phase done! Take your break. You earned it.", "success");
+      showToast("ğŸ‰ Work phase done! Take your break. You earned it.", "success");
     } else if (pomodoroRounds > 0) {
-      showToast(`?”¥ Break over. Round ${pomodoroRounds + 1} ??let's go.`, "info");
+      showToast(`ğŸ”¥ Break over. Round ${pomodoroRounds + 1} â€” let's go.`, "info");
     }
   }, [pomodoroPhase, pomodoroMode, pomodoroRounds]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
-  // Tab visibility ??pause + roast
+  // Tab visibility â€” pause + roast
   useEffect(() => {
     function handleVisibility() {
       if (document.hidden && focusActive) {
@@ -399,7 +400,7 @@ export default function App() {
     setStats(s => {
       const newStreak = yesterdayDone > 0 ? s.streak + 1 : daysMissed >= 2 ? 0 : s.streak;
       const milestoneMsg = STREAK_MILESTONES[newStreak];
-      if (milestoneMsg) setTimeout(() => showToast("?”¥ " + milestoneMsg, "success"), 1200);
+      if (milestoneMsg) setTimeout(() => showToast("ğŸ”¥ " + milestoneMsg, "success"), 1200);
       return { ...s, lastActiveDate: today, lastDayFocusSecs: 0, streak: newStreak };
     });
     setNewDayScreen(null);
@@ -576,7 +577,7 @@ Respond ONLY as valid JSON, no markdown, no backticks:
             </div>
           </div>
           <div style={{ display: "flex", gap: 8 }}>
-            <StatPill val={stats.streak + "?”¥"} lbl="STREAK" color="#f97316" />
+            <StatPill val={stats.streak + "ğŸ”¥"} lbl="STREAK" color="#f97316" />
             <StatPill val={stats.totalXP + " XP"} lbl="EARNED" color="#eab308" />
           </div>
         </div>
@@ -584,7 +585,7 @@ Respond ONLY as valid JSON, no markdown, no backticks:
         {/* Level bar */}
         <div style={{ marginTop: 14, background: "#16161f", border: "1px solid #2a2a38", borderRadius: 12, padding: "10px 14px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#eab308" }}>Lv.{lv.level} ??{lv.title}</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "#eab308" }}>Lv.{lv.level} â€” {lv.title}</span>
             <span style={{ fontSize: 11, color: "#555570" }}>{stats.totalXP} / {lv.max} XP</span>
           </div>
           <div style={{ height: 5, background: "#0f0f18", borderRadius: 99, overflow: "hidden" }}>
@@ -608,7 +609,7 @@ Respond ONLY as valid JSON, no markdown, no backticks:
 
       {/* NAV */}
       <div style={{ display: "flex", margin: "16px 20px 0", background: "#16161f", borderRadius: 10, padding: 3, border: "1px solid #2a2a38" }}>
-        {[["tasks","??"],["planner","??"],["history","??"],["rewards","??]].map(([v, lbl]) => (
+        {[["tasks","ğŸ“‹"],["planner","ğŸ§ "],["history","ğŸ“…"],["rewards","âœ¨"]].map(([v, lbl]) => (
           <button key={v} onClick={() => setView(v)} style={{
             flex: 1, padding: "9px 0", border: "none", borderRadius: 8, cursor: "pointer",
             fontSize: 16, fontWeight: 700,
@@ -624,14 +625,14 @@ Respond ONLY as valid JSON, no markdown, no backticks:
 
           {/* FOCUS / POMODORO BLOCK */}
           {!focusActive ? (
-            // ?€?€ Mode picker ?€?€
+            // â”€â”€ Mode picker â”€â”€
             <div style={{ background: "#16161f", border: "1px solid #2a2a38", borderRadius: 16, padding: "16px", marginBottom: 14 }}>
               <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: "#555570", marginBottom: 12 }}>FOCUS MODE</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
                 {[
-                  { label: "Free", sub: "No timer", mode: null, icon: "??, color: "#6366f1" },
-                  { label: "25 / 5", sub: "Pomodoro", mode: "25/5", icon: "??", color: "#ef4444" },
-                  { label: "50 / 10", sub: "Deep work", mode: "50/10", icon: "?”¬", color: "#06b6d4" },
+                  { label: "Free", sub: "No timer", mode: null, icon: "â±", color: "#6366f1" },
+                  { label: "25 / 5", sub: "Pomodoro", mode: "25/5", icon: "ğŸ…", color: "#ef4444" },
+                  { label: "50 / 10", sub: "Deep work", mode: "50/10", icon: "ğŸ”¬", color: "#06b6d4" },
                 ].map(({ label, sub, mode, icon, color }) => (
                   <button key={label} onClick={() => startFocus(mode)} style={{
                     padding: "12px 8px", background: color + "15", border: "1px solid " + color + "40",
@@ -650,7 +651,7 @@ Respond ONLY as valid JSON, no markdown, no backticks:
               )}
             </div>
           ) : (
-            // ?€?€ Active session ?€?€
+            // â”€â”€ Active session â”€â”€
             <div style={{
               background: pomodoroPhase === "break"
                 ? "linear-gradient(135deg,#0a1020,#0f1a30)"
@@ -664,7 +665,7 @@ Respond ONLY as valid JSON, no markdown, no backticks:
                   <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: pomodoroPhase === "break" ? "#60a5fa" : "#22c55e" }}>
                     {pomodoroMode
                       ? `${pomodoroMode} POMODORO Â· ${pomodoroPhase === "work" ? "WORK" : "BREAK"}`
-                      : "??FREE FOCUS LIVE"}
+                      : "â— FREE FOCUS LIVE"}
                   </div>
                   {pomodoroMode && pomodoroRounds > 0 && (
                     <div style={{ fontSize: 11, color: "#555570", marginTop: 2 }}>
@@ -675,7 +676,7 @@ Respond ONLY as valid JSON, no markdown, no backticks:
                 <button onClick={stopFocus} style={{
                   padding: "8px 14px", background: "#7f1d1d", border: "1px solid #ef4444",
                   borderRadius: 10, color: "#fca5a5", fontSize: 12, fontWeight: 700, cursor: "pointer"
-                }}>??Stop</button>
+                }}>â¹ Stop</button>
               </div>
 
               {/* Timer display */}
@@ -706,7 +707,7 @@ Respond ONLY as valid JSON, no markdown, no backticks:
                             {pad2(mins)}:{pad2(secs)}
                           </div>
                           <div style={{ fontSize: 12, color: "#555570", marginTop: 2 }}>
-                            {pomodoroPhase === "work" ? "Stay focused" : "Rest up ??}
+                            {pomodoroPhase === "work" ? "Stay focused" : "Rest up â˜•"}
                           </div>
                           {/* Round dots */}
                           <div style={{ display: "flex", gap: 4, marginTop: 8 }}>
@@ -732,7 +733,7 @@ Respond ONLY as valid JSON, no markdown, no backticks:
 
           {sorted.length === 0 && (
             <div style={{ textAlign: "center", padding: "48px 0", color: "#3a3a50" }}>
-              <div style={{ fontSize: 40, marginBottom: 10 }}>??</div>
+              <div style={{ fontSize: 40, marginBottom: 10 }}>ğŸ“‹</div>
               <div style={{ fontWeight: 700, color: "#555570", marginBottom: 4 }}>Nothing here yet.</div>
               <div style={{ fontSize: 13 }}>Add something. Big or small, it all counts.</div>
             </div>
@@ -784,7 +785,7 @@ Respond ONLY as valid JSON, no markdown, no backticks:
           {/* Section: done */}
           {sorted.filter(t => t.done).length > 0 && (
             <>
-              <SectionLabel label="DONE ?? color="#22c55e" />
+              <SectionLabel label="DONE âœ“" color="#22c55e" />
               {sorted.filter(t => t.done).map(t => (
                 <TaskCard key={t.id} task={t} faded
                   onToggle={toggleDone}
@@ -807,7 +808,7 @@ Respond ONLY as valid JSON, no markdown, no backticks:
           {total > 0 && (
             <div style={{ marginTop: 20, background: "#16161f", border: "1px solid #2a2a38", borderRadius: 12, padding: "12px 16px", fontSize: 13, color: "#7070a0", lineHeight: 1.6, textAlign: "center" }}>
               {pct === 100
-                ? "?? You finished everything. That's rare. Be proud."
+                ? "ğŸ‰ You finished everything. That's rare. Be proud."
                 : done === 0
                 ? "Every task you avoid is just a task you're saving for future you. Be kind to them."
                 : `${done} done is still ${done} done. Keep the momentum.`}
@@ -849,7 +850,7 @@ Respond ONLY as valid JSON, no markdown, no backticks:
   );
 }
 
-// ?€?€ NEW DAY SCREEN ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+// â”€â”€ NEW DAY SCREEN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function NewDayScreen({ data, onAction }) {
   const dayLabel = new Date(data.date + "T12:00:00").toLocaleDateString("en", { weekday: "long", month: "short", day: "numeric" });
@@ -859,7 +860,7 @@ function NewDayScreen({ data, onAction }) {
       <div style={{ maxWidth: 420, width: "100%" }}>
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <div style={{ fontSize: 48, marginBottom: 12, animation: "float 3s ease-in-out infinite" }}>??</div>
+          <div style={{ fontSize: 48, marginBottom: 12, animation: "float 3s ease-in-out infinite" }}>ğŸŒ…</div>
           <div style={{ fontSize: 10, letterSpacing: 3, color: "#6366f1", fontWeight: 700, marginBottom: 6 }}>NEW DAY</div>
           <div style={{ fontSize: 26, fontWeight: 900, color: "#f1f1f5", marginBottom: 4 }}>
             {new Date().toLocaleDateString("en", { weekday: "long", month: "short", day: "numeric" })}
@@ -925,13 +926,13 @@ function NewDayScreen({ data, onAction }) {
               padding: 16, background: "#1e1b4b", border: "1px solid #6366f1", borderRadius: 14,
               color: "#a5b4fc", fontSize: 14, fontWeight: 700, cursor: "pointer",
             }}>
-              ?? Carry over unfinished tasks
+              ğŸ“… Carry over unfinished tasks
             </button>
             <button onClick={() => onAction("clear")} style={{
               padding: 16, background: "#16161f", border: "1px solid #2a2a38", borderRadius: 14,
               color: "#555570", fontSize: 14, fontWeight: 600, cursor: "pointer",
             }}>
-              ?? Fresh start ??clear everything
+              ğŸ—‘ Fresh start â€” clear everything
             </button>
           </div>
         ) : (
@@ -940,7 +941,7 @@ function NewDayScreen({ data, onAction }) {
             border: "1px solid #6366f1", borderRadius: 14,
             color: "#f1f1f5", fontSize: 15, fontWeight: 800, cursor: "pointer",
           }}>
-            ?? Start today
+            ğŸŒ… Start today
           </button>
         )}
       </div>
@@ -948,7 +949,7 @@ function NewDayScreen({ data, onAction }) {
   );
 }
 
-// ?€?€ TAB AWAY OVERLAY ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+// â”€â”€ TAB AWAY OVERLAY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function TabAwayOverlay({ msg, onDismiss }) {
   return (
@@ -962,33 +963,33 @@ function TabAwayOverlay({ msg, onDismiss }) {
         padding: "32px 28px", maxWidth: 320, width: "100%", textAlign: "center",
         animation: "popIn .4s ease", boxShadow: "0 0 60px #ef444430",
       }}>
-        <div style={{ fontSize: 52, marginBottom: 12, animation: "float 2s ease-in-out infinite" }}>??</div>
+        <div style={{ fontSize: 52, marginBottom: 12, animation: "float 2s ease-in-out infinite" }}>ğŸ‘€</div>
         <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: "#ef4444", marginBottom: 8 }}>FOCUS PAUSED</div>
         <div style={{ fontSize: 16, fontWeight: 700, color: "#f1f1f5", marginBottom: 10, lineHeight: 1.5 }}>"{msg}"</div>
         <div style={{ fontSize: 12, color: "#555570", marginBottom: 18 }}>Timer stopped while you were gone.</div>
         <button onClick={onDismiss} style={{
           width: "100%", padding: "12px", background: "#14532d", border: "1px solid #22c55e",
           borderRadius: 10, color: "#86efac", fontSize: 13, fontWeight: 700, cursor: "pointer",
-        }}>??Resume Focus</button>
+        }}>â–¶ Resume Focus</button>
       </div>
     </div>
   );
 }
 
-// ?€?€ AI PLANNER VIEW ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+// â”€â”€ AI PLANNER VIEW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function PlannerView({ tasks, energy, setEnergy, result, loading, onRun }) {
   const activeTasks = tasks.filter(t => !t.done && !t.skipped);
   const energyOptions = [
-    { id: "morning",   icon: "??", label: "Morning",   sub: "Peak before noon" },
-    { id: "afternoon", icon: "?€ï¸?,  label: "Afternoon", sub: "Peak 12??pm" },
-    { id: "evening",   icon: "??", label: "Evening",   sub: "Peak after 5pm" },
+    { id: "morning",   icon: "ğŸŒ…", label: "Morning",   sub: "Peak before noon" },
+    { id: "afternoon", icon: "â˜€ï¸",  label: "Afternoon", sub: "Peak 12â€“5pm" },
+    { id: "evening",   icon: "ğŸŒ™", label: "Evening",   sub: "Peak after 5pm" },
   ];
   return (
     <div style={{ padding: "14px 20px" }}>
       <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: "#555570", marginBottom: 12 }}>80/20 AI PLANNER</div>
       <div style={{ background: "#16161f", border: "1px solid #2a2a38", borderRadius: 14, padding: 16, marginBottom: 14, fontSize: 13, color: "#7070a0", lineHeight: 1.6 }}>
-        Tell the AI your peak energy time. It'll identify the <span style={{ color: "#6366f1", fontWeight: 700 }}>top 20% of tasks</span> that will create 80% of your results ??and schedule them ruthlessly.
+        Tell the AI your peak energy time. It'll identify the <span style={{ color: "#6366f1", fontWeight: 700 }}>top 20% of tasks</span> that will create 80% of your results â€” and schedule them ruthlessly.
       </div>
 
       {/* Energy picker */}
@@ -1022,7 +1023,7 @@ function PlannerView({ tasks, energy, setEnergy, result, loading, onRun }) {
             borderRadius: 14, color: energy ? "#a5b4fc" : "#3a3a50",
             fontSize: 14, fontWeight: 800, cursor: energy ? "pointer" : "not-allowed", marginBottom: 16,
           }}>
-            {loading ? "?? Thinking..." : "?? Generate 80/20 Plan"}
+            {loading ? "ğŸ§  Thinking..." : "ğŸ§  Generate 80/20 Plan"}
           </button>
         </>
       )}
@@ -1032,11 +1033,11 @@ function PlannerView({ tasks, energy, setEnergy, result, loading, onRun }) {
         <div style={{ animation: "fadeIn .4s" }}>
           {/* Coach note */}
           <div style={{ background: "#0d0b24", border: "1px solid #3730a3", borderRadius: 12, padding: "12px 16px", marginBottom: 14, fontSize: 13, color: "#a5b4fc", fontStyle: "italic" }}>
-            ?’¬ "{result.coachNote}"
+            ğŸ’¬ "{result.coachNote}"
           </div>
 
           {/* Top 20% */}
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: "#ef4444", marginBottom: 10 }}>?¯ CRITICAL 20% ??DO THESE FIRST</div>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: "#ef4444", marginBottom: 10 }}>ğŸ¯ CRITICAL 20% â€” DO THESE FIRST</div>
           {result.schedule
             .filter(s => result.top20.includes(s.taskNum))
             .map((s, i) => {
@@ -1056,7 +1057,7 @@ function PlannerView({ tasks, energy, setEnergy, result, loading, onRun }) {
           {/* Rest */}
           {result.schedule.filter(s => !result.top20.includes(s.taskNum)).length > 0 && (
             <>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: "#555570", marginBottom: 10, marginTop: 14 }}>THE OTHER 80% ??GET TO THESE AFTER</div>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: "#555570", marginBottom: 10, marginTop: 14 }}>THE OTHER 80% â€” GET TO THESE AFTER</div>
               {result.schedule
                 .filter(s => !result.top20.includes(s.taskNum))
                 .map((s, i) => {
@@ -1080,14 +1081,14 @@ function PlannerView({ tasks, energy, setEnergy, result, loading, onRun }) {
   );
 }
 
-// ?€?€ HISTORY VIEW ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+// â”€â”€ HISTORY VIEW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function HistoryView() {
   const history = loadHistory();
   if (history.length === 0) {
     return (
       <div style={{ padding: "40px 20px", textAlign: "center", color: "#3a3a50" }}>
-        <div style={{ fontSize: 40, marginBottom: 12 }}>??</div>
+        <div style={{ fontSize: 40, marginBottom: 12 }}>ğŸ“…</div>
         <div style={{ fontWeight: 700, color: "#555570", marginBottom: 6 }}>No history yet.</div>
         <div style={{ fontSize: 13 }}>Come back tomorrow. Your record starts then.</div>
       </div>
@@ -1095,7 +1096,7 @@ function HistoryView() {
   }
   return (
     <div style={{ padding: "14px 20px" }}>
-      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: "#555570", marginBottom: 12 }}>YOUR RECORD ??ALL TIME</div>
+      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: "#555570", marginBottom: 12 }}>YOUR RECORD â€” ALL TIME</div>
       {history.map((day, i) => {
         const pct = day.total > 0 ? Math.round((day.done / day.total) * 100) : 0;
         const pctColor = pct === 100 ? "#22c55e" : pct >= 60 ? "#6366f1" : pct >= 30 ? "#f97316" : "#ef4444";
@@ -1105,14 +1106,14 @@ function HistoryView() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: "#e2e2e8" }}>{label}</div>
               <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-                {day.streak > 0 && <span style={{ fontSize: 11, color: "#f97316" }}>{day.streak}?”¥</span>}
+                {day.streak > 0 && <span style={{ fontSize: 11, color: "#f97316" }}>{day.streak}ğŸ”¥</span>}
                 <span style={{ fontSize: 12, fontWeight: 800, color: pctColor }}>{pct}%</span>
               </div>
             </div>
             <div style={{ display: "flex", gap: 16, marginBottom: 8 }}>
-              <span style={{ fontSize: 11, color: "#22c55e" }}>??{day.done} done</span>
+              <span style={{ fontSize: 11, color: "#22c55e" }}>âœ“ {day.done} done</span>
               <span style={{ fontSize: 11, color: "#555570" }}>/ {day.total} total</span>
-              {day.focusSecs > 0 && <span style={{ fontSize: 11, color: "#06b6d4" }}>??{fmtDuration(day.focusSecs)}</span>}
+              {day.focusSecs > 0 && <span style={{ fontSize: 11, color: "#06b6d4" }}>â± {fmtDuration(day.focusSecs)}</span>}
             </div>
             <div style={{ height: 4, background: "#0f0f18", borderRadius: 99, overflow: "hidden" }}>
               <div style={{ height: "100%", width: pct + "%", background: pctColor, borderRadius: 99 }} />
@@ -1124,7 +1125,7 @@ function HistoryView() {
   );
 }
 
-// ?€?€ TASK CARD ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+// â”€â”€ TASK CARD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function TaskCard({ task, onToggle, onNotToday, onCarryOver, onEdit, onDelete, onReschedule, faded }) {
   const [expanded, setExpanded] = useState(false);
@@ -1144,7 +1145,7 @@ function TaskCard({ task, onToggle, onNotToday, onCarryOver, onEdit, onDelete, o
 
   const timeCfg = {
     upcoming: { c: "#6366f1", lbl: "Upcoming" },
-    active:   { c: "#22c55e", lbl: "??Now" },
+    active:   { c: "#22c55e", lbl: "â— Now" },
     overdue:  { c: "#ef4444", lbl: "Overdue" },
     none:     { c: "#3a3a50", lbl: "" },
   }[timeStatus];
@@ -1162,7 +1163,7 @@ function TaskCard({ task, onToggle, onNotToday, onCarryOver, onEdit, onDelete, o
           border: "2px solid " + (task.done ? "#6366f1" : "#3a3a50"),
           cursor: "pointer", color: "#fff", fontSize: 12, fontWeight: 800,
           display: "flex", alignItems: "center", justifyContent: "center",
-        }}>{task.done ? "?? : ""}</button>
+        }}>{task.done ? "âœ“" : ""}</button>
 
         {/* Content */}
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -1172,26 +1173,26 @@ function TaskCard({ task, onToggle, onNotToday, onCarryOver, onEdit, onDelete, o
           {task.startTime && task.endTime && (
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 5 }}>
               <span style={{ fontSize: 11, fontWeight: 700, color: timeCfg.c, background: timeCfg.c + "18", border: "1px solid " + timeCfg.c + "30", borderRadius: 6, padding: "2px 7px" }}>
-                {fmtTime(task.startTime)} ??{fmtTime(task.endTime)}
+                {fmtTime(task.startTime)} â€“ {fmtTime(task.endTime)}
               </span>
               {timeCfg.lbl ? <span style={{ fontSize: 10, color: timeCfg.c, fontWeight: 700 }}>{timeCfg.lbl}</span> : null}
             </div>
           )}
           {!task.done && !task.skipped && !task.carriedOver && (
-            <div style={{ fontSize: 10, color: "#3a3a55", marginTop: 4 }}>??{sinceAdded(task.addedAt)}</div>
+            <div style={{ fontSize: 10, color: "#3a3a55", marginTop: 4 }}>â± {sinceAdded(task.addedAt)}</div>
           )}
-          {task.carriedOver && <div style={{ fontSize: 10, color: "#6366f1", marginTop: 4 }}>?? Moved to tomorrow</div>}
-          {task.skipped && <div style={{ fontSize: 10, color: "#555570", marginTop: 4 }}>?’¤ Not today</div>}
+          {task.carriedOver && <div style={{ fontSize: 10, color: "#6366f1", marginTop: 4 }}>ğŸ“… Moved to tomorrow</div>}
+          {task.skipped && <div style={{ fontSize: 10, color: "#555570", marginTop: 4 }}>ğŸ’¤ Not today</div>}
         </div>
 
         {/* Expand toggle */}
         {!task.done && !faded && (
           <button onClick={() => setExpanded(e => !e)} style={{ background: "none", border: "none", color: "#555570", cursor: "pointer", fontSize: 18, padding: "0 2px", flexShrink: 0 }}>
-            {expanded ? "?? : "??}
+            {expanded ? "â–²" : "â–¼"}
           </button>
         )}
         {(task.done || faded) && onDelete && (
-          <button onClick={() => onDelete(task.id)} style={{ background: "#1a0a0a", border: "1px solid #3a1010", borderRadius: 8, width: 28, height: 28, cursor: "pointer", fontSize: 15, color: "#7f1d1d", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>?</button>
+          <button onClick={() => onDelete(task.id)} style={{ background: "#1a0a0a", border: "1px solid #3a1010", borderRadius: 8, width: 28, height: 28, cursor: "pointer", fontSize: 15, color: "#7f1d1d", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>Ã—</button>
         )}
       </div>
 
@@ -1206,19 +1207,19 @@ function TaskCard({ task, onToggle, onNotToday, onCarryOver, onEdit, onDelete, o
           {/* Action buttons */}
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             {onEdit && (
-              <ActionBtn onClick={() => { onEdit(); setExpanded(false); }} color="#6366f1">?ï? Edit</ActionBtn>
+              <ActionBtn onClick={() => { onEdit(); setExpanded(false); }} color="#6366f1">âœï¸ Edit</ActionBtn>
             )}
             {onNotToday && (
-              <ActionBtn onClick={() => { onNotToday(task.id); setExpanded(false); }} color="#555570">?’¤ Not today</ActionBtn>
+              <ActionBtn onClick={() => { onNotToday(task.id); setExpanded(false); }} color="#555570">ğŸ’¤ Not today</ActionBtn>
             )}
             {onCarryOver && (
-              <ActionBtn onClick={() => { onCarryOver(task.id); setExpanded(false); }} color="#a855f7">?? Move to tomorrow</ActionBtn>
+              <ActionBtn onClick={() => { onCarryOver(task.id); setExpanded(false); }} color="#a855f7">ğŸ“… Move to tomorrow</ActionBtn>
             )}
             {onReschedule && (
-              <ActionBtn onClick={() => setShowReschedule(r => !r)} color="#f97316">?? Reschedule</ActionBtn>
+              <ActionBtn onClick={() => setShowReschedule(r => !r)} color="#f97316">ğŸ• Reschedule</ActionBtn>
             )}
             {onDelete && (
-              <ActionBtn onClick={() => onDelete(task.id)} color="#ef4444">?? Delete</ActionBtn>
+              <ActionBtn onClick={() => onDelete(task.id)} color="#ef4444">ğŸ—‘ Delete</ActionBtn>
             )}
           </div>
 
@@ -1260,7 +1261,7 @@ function SectionLabel({ label, color = "#3a3a50" }) {
   );
 }
 
-// ?€?€ TASK MODAL (add + edit) ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+// â”€â”€ TASK MODAL (add + edit) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function TaskModal({ task, onSave, onClose }) {
   const [text, setText] = useState(task?.text || "");
@@ -1279,14 +1280,14 @@ function TaskModal({ task, onSave, onClose }) {
       <div style={{ width: "100%", maxWidth: 480, margin: "0 auto", background: "#13131c", borderRadius: "20px 20px 0 0", padding: "24px 20px 40px", animation: "slideUp .3s ease" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
           <div style={{ fontSize: 16, fontWeight: 800, color: "#f1f1f5" }}>{task ? "Edit Task" : "New Task"}</div>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "#555570", fontSize: 22, cursor: "pointer" }}>?</button>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#555570", fontSize: 22, cursor: "pointer" }}>Ã—</button>
         </div>
 
         <FieldLabel>Task</FieldLabel>
         <input value={text} onChange={e => { setText(e.target.value); setErr(""); }} onKeyDown={e => e.key === "Enter" && submit()} placeholder="What do you want to do?"
           style={inputStyle} />
 
-        <FieldLabel>Time block <span style={{ color: "#3a3a50", fontWeight: 400, fontSize: 10 }}>optional ??leave blank for flexible</span></FieldLabel>
+        <FieldLabel>Time block <span style={{ color: "#3a3a50", fontWeight: 400, fontSize: 10 }}>optional â€” leave blank for flexible</span></FieldLabel>
         <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
           {[["START", start, setStart],["END", end, setEnd]].map(([lbl, val, setter]) => (
             <div key={lbl} style={{ flex: 1 }}>
@@ -1312,7 +1313,7 @@ function FieldLabel({ children }) {
 
 const inputStyle = { width: "100%", background: "#0f0f18", border: "1px solid #2a2a38", borderRadius: 10, padding: "11px 14px", color: "#e2e2e8", fontSize: 14, marginBottom: 16 };
 
-// ?€?€ REWARDS VIEW ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+// â”€â”€ REWARDS VIEW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function RewardsView({ stats }) {
   const lv = getLevelInfo(stats.totalXP);
@@ -1321,10 +1322,10 @@ function RewardsView({ stats }) {
       {/* Identity card */}
       <div style={{ background: "linear-gradient(135deg,#1a1a2e,#0f3460)", border: "1px solid #3730a3", borderRadius: 16, padding: 20, marginBottom: 16 }}>
         <div style={{ fontSize: 10, letterSpacing: 2, color: "#6366f1", fontWeight: 700, marginBottom: 4 }}>YOU ARE BECOMING</div>
-        <div style={{ fontSize: 22, fontWeight: 900, color: "#f1f1f5", marginBottom: 2 }}>Level {lv.level} ??{lv.title}</div>
+        <div style={{ fontSize: 22, fontWeight: 900, color: "#f1f1f5", marginBottom: 2 }}>Level {lv.level} â€” {lv.title}</div>
         <div style={{ fontSize: 13, color: "#8080b0", marginBottom: 14 }}>{stats.totalXP} XP earned. Every task, every choice.</div>
         <div style={{ display: "flex", gap: 20 }}>
-          {[["Done",stats.totalDone,"#22c55e"],["Streak",stats.streak+"?”¥","#f97316"],["Flexible",stats.reschedules,"#a855f7"],["Badges",(stats.earnedBadges||[]).length,"#eab308"]].map(([lbl,val,color])=>(
+          {[["Done",stats.totalDone,"#22c55e"],["Streak",stats.streak+"ğŸ”¥","#f97316"],["Flexible",stats.reschedules,"#a855f7"],["Badges",(stats.earnedBadges||[]).length,"#eab308"]].map(([lbl,val,color])=>(
             <div key={lbl}>
               <div style={{ fontSize: 19, fontWeight: 800, color }}>{val}</div>
               <div style={{ fontSize: 9, color: "#555570", fontWeight: 600, letterSpacing: 0.5 }}>{lbl.toUpperCase()}</div>
@@ -1337,7 +1338,8 @@ function RewardsView({ stats }) {
       <SectionLabel label="YOUR TRAITS" color="#555570" />
       {Object.keys(stats.traitXP).length === 0 ? (
         <div style={{ background: "#16161f", border: "1px solid #2a2a38", borderRadius: 12, padding: 20, textAlign: "center", color: "#3a3a50", fontSize: 13, marginBottom: 16 }}>
-          Complete tasks to earn surprise traits ??        </div>
+          Complete tasks to earn surprise traits âœ¨
+        </div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
           {TRAITS.filter(t => stats.traitXP[t.id]).map(trait => {
@@ -1379,7 +1381,7 @@ function RewardsView({ stats }) {
   );
 }
 
-// ?€?€ REWARD POPUP ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+// â”€â”€ REWARD POPUP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function RewardPopup({ reward, onClose }) {
   useEffect(() => { const t = setTimeout(onClose, 3800); return () => clearTimeout(t); }, [onClose]);
@@ -1399,14 +1401,14 @@ function RewardPopup({ reward, onClose }) {
   );
 }
 
-// ?€?€ BADGE POPUP ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+// â”€â”€ BADGE POPUP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function BadgePopup({ badge, onClose }) {
   useEffect(() => { const t = setTimeout(onClose, 4000); return () => clearTimeout(t); }, [onClose]);
   return (
     <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.75)", zIndex: 600, display: "flex", alignItems: "center", justifyContent: "center", padding: 24, animation: "fadeIn .2s" }}>
       <div style={{ background: "#13131c", border: "2px solid #eab308", borderRadius: 20, padding: "28px 24px", maxWidth: 280, width: "100%", textAlign: "center", animation: "popIn .4s ease", boxShadow: "0 0 80px #eab30840" }}>
-        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: "#eab308", marginBottom: 8 }}>?? BADGE UNLOCKED</div>
+        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: "#eab308", marginBottom: 8 }}>ğŸ† BADGE UNLOCKED</div>
         <div style={{ fontSize: 56, marginBottom: 10, animation: "float 2s ease-in-out infinite" }}>{badge.icon}</div>
         <div style={{ fontSize: 20, fontWeight: 900, color: "#f1f1f5", marginBottom: 6 }}>{badge.label}</div>
         <div style={{ fontSize: 13, color: "#8080b0" }}>{badge.desc}</div>
@@ -1416,7 +1418,7 @@ function BadgePopup({ badge, onClose }) {
   );
 }
 
-// ?€?€ TOAST ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+// â”€â”€ TOAST â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function Toast({ toast }) {
   const s = {
